@@ -201,4 +201,97 @@ public void deleteRecord(String sql, Object... values) {
         }
         return result;
     }
+
+   //-----------------------------------------------
+// VIEW RECORDS METHOD WITH MULTIPLE ID PARAMETERS
+//-----------------------------------------------
+public void viewRecords(String qry, String[] headers, String[] columns, int id, int id0, int id1, int id2) {
+    // Ensure the columnHeaders and columnNames arrays are the same length
+    if (headers.length != columns.length) {
+        System.out.println("Error: Mismatch between column headers and column names.");
+        return;
     }
+
+    try (Connection conn = this.connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(qry)) {
+
+        // Set the parameters for the prepared statement dynamically
+        pstmt.setInt(1, id);   // First id
+        pstmt.setInt(2, id0);  // Second id
+        pstmt.setInt(3, id1);  // Third id
+        pstmt.setInt(4, id2);  // Fourth id
+
+        ResultSet rs = pstmt.executeQuery();
+
+        // Print the headers dynamically
+        StringBuilder headerLine = new StringBuilder();
+        headerLine.append("--------------------------------------------------------------------------------\n| ");
+        for (String header : headers) {
+            headerLine.append(String.format("%-20s | ", header)); // Adjust formatting as needed
+        }
+        headerLine.append("\n--------------------------------------------------------------------------------");
+
+        System.out.println(headerLine.toString());
+
+        // Print the rows dynamically based on the provided column names
+        while (rs.next()) {
+            StringBuilder row = new StringBuilder("| ");
+            for (String colName : columns) {
+                String value = rs.getString(colName);
+                row.append(String.format("%-20s | ", value != null ? value : "")); // Adjust formatting
+            }
+            System.out.println(row.toString());
+        }
+        System.out.println("--------------------------------------------------------------------------------");
+
+    } catch (SQLException e) {
+        System.out.println("Error retrieving records: " + e.getMessage());
+    }
+}
+
+//-----------------------------------------------
+// VIEW RECORDS METHOD WITH SINGLE CUSTOMER ID PARAMETER
+//-----------------------------------------------
+public void viewRecords(String qry, String[] headers, String[] columns, int cid) {
+    // Ensure the columnHeaders and columnNames arrays are the same length
+    if (headers.length != columns.length) {
+        System.out.println("Error: Mismatch between column headers and column names.");
+        return;
+    }
+
+    try (Connection conn = this.connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(qry)) {
+
+        // Set the customer ID as the parameter for the prepared statement
+        pstmt.setInt(1, cid);
+
+        ResultSet rs = pstmt.executeQuery();
+
+        // Print the headers dynamically
+        StringBuilder headerLine = new StringBuilder();
+        headerLine.append("--------------------------------------------------------------------------------\n| ");
+        for (String header : headers) {
+            headerLine.append(String.format("%-20s | ", header)); // Adjust formatting as needed
+        }
+        headerLine.append("\n--------------------------------------------------------------------------------");
+
+        System.out.println(headerLine.toString());
+
+        // Print the rows dynamically based on the provided column names
+        while (rs.next()) {
+            StringBuilder row = new StringBuilder("| ");
+            for (String colName : columns) {
+                String value = rs.getString(colName);
+                row.append(String.format("%-20s | ", value != null ? value : "")); // Adjust formatting
+            }
+            System.out.println(row.toString());
+        }
+        System.out.println("--------------------------------------------------------------------------------");
+
+    } catch (SQLException e) {
+        System.out.println("Error retrieving records: " + e.getMessage());
+    }
+}
+
+    }
+    

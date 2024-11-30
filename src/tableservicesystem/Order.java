@@ -1,5 +1,6 @@
 package tableservicesystem;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
@@ -31,10 +32,14 @@ public class Order {
                 or.viewOrders();
                 break;
             case 3:
-                
+                or.viewOrders();
+                or.updateOrders();
+                or.viewOrders();
                 break;
             case 4:
-                   
+                or.viewOrders();
+                or.deleteOrders();
+                or.viewOrders();
                 break;
         }
         System.out.println("Do you want to continue? (yes/no)");
@@ -104,4 +109,60 @@ public class Order {
 
   
     }
+        private void updateOrders() {
+        Scanner sc = new Scanner(System.in);
+        config conf = new config();
+        int id;
+
+        while (true) {
+            System.out.print("Enter the ID to update: ");
+            while (!sc.hasNextInt()) {
+            System.out.print("Invalid input! Please enter a valid Order ID: ");
+            sc.next();
+        }
+            try {
+                id = sc.nextInt();
+                if (conf.getSingleValue("SELECT o_id FROM tbl_order WHERE o_id = ?", id) != 0) {
+                    break; 
+                }
+                System.out.println("Selected ID doesn't exist! Try again.");
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input! Please enter a valid ID.");
+                sc.nextLine();             }
+        }
+
+        System.out.print("New Order Status: ");
+        sc.nextLine(); 
+        String status = sc.nextLine();
+
+        String qry = "UPDATE tbl_order SET o_status = ? WHERE o_id = ?";
+        conf.updateRecord(qry, status, id);
+    }
+
+    private void deleteOrders() {
+        Scanner sc = new Scanner(System.in);
+        config conf = new config();
+        int id;
+
+        while (true) {
+            System.out.print("Enter the ID to delete: ");
+            while (!sc.hasNextInt()) {
+            System.out.print("Invalid input! Please enter a valid Order ID: ");
+            sc.next();
+        }
+            try {
+                id = sc.nextInt();
+                if (conf.getSingleValue("SELECT o_id FROM tbl_order WHERE o_id = ?", id) != 0) {
+                    break; 
+                }
+                System.out.println("Selected ID doesn't exist! Try again.");
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input! Please enter a valid ID.");
+                sc.nextLine(); 
+            }
+        }
+
+        String qry = "DELETE FROM tbl_order WHERE o_id = ?";
+        conf.deleteRecord(qry, id);
+}
 }

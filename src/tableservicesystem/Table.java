@@ -1,35 +1,47 @@
 package tableservicesystem;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
 public class Table {
     
-    public void tableTransaction(){
-    
-        Scanner sc = new Scanner (System.in);
-        String response;
-        do{
-            
-       
-        System.out.println("[******WELCOME TO TABLES******]");    
+   public void tableTransaction() {
+    Scanner sc = new Scanner(System.in);
+    String response;
+
+    do {
+        System.out.println("");
+        System.out.println("[******WELCOME TO TABLES******]");
+        System.out.println("");
         System.out.println("1. --ADD TABLE--");
         System.out.println("2. --VIEW TABLE--");
         System.out.println("3. --UPDATE TABLE--");
         System.out.println("4. --DELETE TABLE--");
-        System.out.println("5. --EXIT TABLE-- ");
-        
-        System.out.print("Enter Action: ");
-        int action = sc.nextInt();
-        Table tb = new Table ();
-        
+        System.out.println("5. --EXIT TABLE--");
 
-        switch(action){
+        int action = -1; 
+
+        
+        while (true) {
+            System.out.print("Enter Action: ");
+            if (sc.hasNextInt()) {
+                action = sc.nextInt();
+                break;
+            } else {
+                System.out.println("Invalid input! Please enter a number between 1 and 5.");
+                sc.next(); 
+            }
+        }
+
+        Table tb = new Table();
+
+        switch (action) {
             case 1:
-                tb.addTables();   
+                tb.addTables();
                 tb.viewTables();
                 break;
-            case 2:       
+            case 2:
                 tb.viewTables();
                 break;
             case 3:
@@ -40,16 +52,22 @@ public class Table {
             case 4:
                 tb.viewTables();
                 tb.deleteTables();
-                tb.viewTables();    
+                tb.viewTables();
                 break;
+            case 5:
+                System.out.println("Exiting Table Management...");
+                return; 
+            default:
+                System.out.println("Invalid choice! Please select a valid option (1-5).");
         }
-        System.out.println("Do you want to continue? (yes/no)");
+
+        System.out.print("Do you want to continue? (yes/no): ");
         response = sc.next();
-    }while(response.equalsIgnoreCase("yes"));
-    System.out.println("Thank You, See you soonest!");
-    
-    }
-    
+    } while (response.equalsIgnoreCase("yes"));
+
+    System.out.println("Thank You, See you soon!");
+}
+
     
     public void addTables(){
         Scanner sc = new Scanner (System.in);   
@@ -57,14 +75,23 @@ public class Table {
         Employee em = new Employee ();
         em.viewEmployee();   
         
-        System.out.print("Enter the ID of the Employee: ");
-        int eid = sc.nextInt();
-        
-        String csql = "SELECT e_id FROM tbl_employee WHERE e_id = ?";
-        while(conf.getSingleValue(csql, eid) == 0){
-            System.out.print("Customer does not exist, Select Again: ");
-            eid = sc.nextInt();
-            
+        int eid;
+        while (true) {
+            System.out.print("Enter the ID to update: ");
+            while (!sc.hasNextInt()) {
+            System.out.print("Invalid input! Please enter a valid Employee ID: ");
+            sc.next();
+        }
+            try {
+                eid = sc.nextInt();
+                if (conf.getSingleValue("SELECT e_id FROM tbl_employee WHERE e_id = ?", eid) != 0) {
+                    break; 
+                }
+                System.out.println("Selected ID doesn't exist! Try again.");
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid ID! Please enter a valid ID.");
+                sc.nextLine(); 
+            }
         }
 
         
@@ -96,13 +123,23 @@ public class Table {
     private void updateTables() {
         Scanner sc = new Scanner(System.in);
         config conf = new config();
-        System.out.println("Enter the ID to update: ");
-        int id = sc.nextInt();
-  
-        while(conf.getSingleValue("SELECT t_id FROM tbl_tables WHERE t_id = ?", id) == 0){
-        System.out.println("Selected ID doesn't exist!");
-        System.out.print("Select Table ID Again: ");
-        id = sc.nextInt();
+        int id;
+        while (true) {
+            System.out.print("Enter the ID to update: ");
+            while (!sc.hasNextInt()) {
+            System.out.print("Invalid input! Please enter a valid Table ID: ");
+            sc.next();
+        }
+            try {
+                id = sc.nextInt();
+                if (conf.getSingleValue("SELECT t_id FROM tbl_tables WHERE t_id = ?", id) != 0) {
+                    break; 
+                }
+                System.out.println("Selected ID doesn't exist! Try again.");
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid ID! Please enter a valid ID.");
+                sc.nextLine(); 
+            }
         }
         
         System.out.println("New Table Capacity: ");
@@ -122,13 +159,23 @@ public class Table {
     private void deleteTables() {
         Scanner sc = new Scanner (System.in);
         config conf = new config();
-        System.out.println("Enter the ID to delete: ");
-        int id = sc.nextInt();
-        
-        while(conf.getSingleValue("SELECT t_id FROM tbl_tables WHERE t_id = ?", id) == 0){
-        System.out.println("Selected ID doesn't exist!");
-        System.out.print("Select Table ID Again: ");
-        id = sc.nextInt();
+        int id;
+        while (true) {
+            System.out.print("Enter the ID to update: ");
+            while (!sc.hasNextInt()) {
+            System.out.print("Invalid input! Please enter a valid Table ID: ");
+            sc.next();
+        }
+            try {
+                id = sc.nextInt();
+                if (conf.getSingleValue("SELECT t_id FROM tbl_tables WHERE t_id = ?", id) != 0) {
+                    break; 
+                }
+                System.out.println("Selected ID doesn't exist! Try again.");
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid ID! Please enter a valid ID.");
+                sc.nextLine(); 
+            }
         }
         
         String qry = "DELETE FROM tbl_tables WHERE t_id = ?";

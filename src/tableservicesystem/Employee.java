@@ -1,32 +1,44 @@
 package tableservicesystem;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
 public class Employee {
-    public void eTransaction(){
-        
-        Scanner sc = new Scanner (System.in);
-        String response;
-        do{
-            
-       
-        System.out.println("[******WELCOME TO EMPLOYEE******]");    
+    public void eTransaction() {
+    Scanner sc = new Scanner(System.in);
+    String response;
+
+    do {
+        System.out.println("");
+        System.out.println("[******WELCOME TO EMPLOYEE******]");
+        System.out.println("");
         System.out.println("1. --ADD EMPLOYEE--");
         System.out.println("2. --VIEW EMPLOYEE--");
         System.out.println("3. --UPDATE EMPLOYEE--");
         System.out.println("4. --DELETE EMPLOYEE--");
-        System.out.println("5. --EXIT EMPLOYEE-- ");
-        
-        System.out.print("Enter Action: ");
-        int action = sc.nextInt();
-        Employee em = new Employee ();
+        System.out.println("5. --EXIT EMPLOYEE--");
 
-        switch(action){
+        int action = -1; 
+
+        while (true) {
+            System.out.print("Enter Action: ");
+            if (sc.hasNextInt()) {
+                action = sc.nextInt();
+                break;
+            } else {
+                System.out.println("Invalid input! Please enter a number between 1 and 5.");
+                sc.next(); 
+            }
+        }
+
+        Employee em = new Employee();
+
+        switch (action) {
             case 1:
                 em.addEmployee();
                 break;
-            case 2:       
+            case 2:
                 em.viewEmployee();
                 break;
             case 3:
@@ -37,15 +49,22 @@ public class Employee {
             case 4:
                 em.viewEmployee();
                 em.deleteEmployee();
-                em.viewEmployee();    
+                em.viewEmployee();
                 break;
+            case 5:
+                System.out.println("Exiting Employee Management...");
+                return; 
+            default:
+                System.out.println("Invalid choice! Please select a valid option (1-5).");
         }
-        System.out.println("Do you want to continue? (yes/no)");
+
+        System.out.print("Do you want to continue? (yes/no): ");
         response = sc.next();
-    }while(response.equalsIgnoreCase("yes"));
-    System.out.println("Thank You, See you soonest!");
-    
-    }
+    } while (response.equalsIgnoreCase("yes"));
+
+    System.out.println("Thank You, See you soon!");
+}
+
     
     
     public void addEmployee () { 
@@ -59,7 +78,7 @@ public class Employee {
         System.out.print("Shift: ");
         String shift = sc.next();
         System.out.print("Contact Number: ");
-        String contact = sc.next();
+        int contact = sc.nextInt();
 
         String sql = "INSERT INTO tbl_employee (e_name, e_role, e_shift, e_contact) VALUES (?, ?, ?, ?)";
         conf.addRecord(sql, ename, role, shift, contact);
@@ -79,13 +98,23 @@ public class Employee {
     private void updateEmployee() {
         Scanner sc = new Scanner(System.in);
         config conf = new config();
-        System.out.println("Enter the ID to update: ");
-        int id = sc.nextInt();
-  
-        while(conf.getSingleValue("SELECT e_id FROM tbl_employee WHERE e_id = ?", id) == 0){
-        System.out.println("Selected ID doesn't exist!");
-        System.out.print("Select Employee ID Again: ");
-        id = sc.nextInt();
+        int id;
+        while (true) {
+            System.out.print("Enter the ID to update: ");
+            while (!sc.hasNextInt()) {
+            System.out.print("Invalid input! Please enter a valid Employee ID: ");
+            sc.next();
+        }
+            try {
+                id = sc.nextInt();
+                if (conf.getSingleValue("SELECT e_id FROM tbl_employee WHERE e_id = ?", id) != 0) {
+                    break; 
+                }
+                System.out.println("Selected ID doesn't exist! Try again.");
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid ID! Please enter a valid ID.");
+                sc.nextLine(); 
+            }
         }
         
         System.out.println("New Employee Name: ");
@@ -95,7 +124,7 @@ public class Employee {
         System.out.println("New Shift: ");
         String nshift = sc.next();
         System.out.println("New Contact Number: ");
-        String ncontact = sc.next();
+        int ncontact = sc.nextInt();
         String qry = "UPDATE tbl_employee SET e_name = ?, e_role = ?, e_shift = ?, e_contact = ? WHERE e_id = ?";
         
         
@@ -107,13 +136,23 @@ public class Employee {
     private void deleteEmployee() {
         Scanner sc = new Scanner (System.in);
         config conf = new config();
-        System.out.println("Enter the ID  to delete: ");
-        int id = sc.nextInt();
-        
-        while(conf.getSingleValue("SELECT e_id FROM tbl_employee WHERE e_id = ?", id) == 0){
-        System.out.println("Selected ID doesn't exist!");
-        System.out.print("Select Employee ID Again: ");
-        id = sc.nextInt();
+        int id;
+        while (true) {
+            System.out.print("Enter the ID to update: ");
+            while (!sc.hasNextInt()) {
+            System.out.print("Invalid input! Please enter a valid Employee ID: ");
+            sc.next();
+        }
+            try {
+                id = sc.nextInt();
+                if (conf.getSingleValue("SELECT e_id FROM tbl_employee WHERE e_id = ?", id) != 0) {
+                    break; 
+                }
+                System.out.println("Selected ID doesn't exist! Try again.");
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid ID! Please enter a valid ID.");
+                sc.nextLine(); 
+            }
         }
         
         String qry = "DELETE FROM tbl_employee WHERE e_id = ?";
